@@ -69,6 +69,7 @@ public class SpringWorker extends WorkerImpl implements ApplicationContextAware 
 					throw new Exception("Not bean Id or class definition found " + job.getClassName());
 				}
 			}
+			fillParameters(job,runnableJob);
 			if (runnableJob != null) {
 				this.listenerDelegate.fireEvent(JOB_PROCESS, this, curQueue, job, null, null, null);
 				if (isThreadNameChangingEnabled()) {
@@ -78,6 +79,13 @@ public class SpringWorker extends WorkerImpl implements ApplicationContextAware 
 			}
 		} catch (Exception e) {
 			failure(e, job, curQueue);
+		}
+	}
+
+	private void fillParameters(final Job job, final Runnable runnableJob) {
+		if(runnableJob instanceof ArgsAware) {
+			ArgsAware paj = (ArgsAware) runnableJob;
+			paj.setArgs(job.getArgs());
 		}
 	}
 
